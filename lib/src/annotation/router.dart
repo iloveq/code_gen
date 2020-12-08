@@ -1,5 +1,5 @@
-class PageRouter {
+class Router {
   final bool isIndex;
   final String path;
-  const PageRouter({this.path = "",this.isIndex = false});
+  const Router({this.path = "",this.isIndex = false});
 }

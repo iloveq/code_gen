@@ -5,7 +5,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../annotation/router.dart';
 
-class RouterGenerator extends GeneratorForAnnotation<PageRouter> {
+class RouterGenerator extends GeneratorForAnnotation<Router> {
   static RouterCollector collector = RouterCollector();
 
   @override
@@ -31,7 +31,7 @@ class RouterGenerator extends GeneratorForAnnotation<PageRouter> {
       for (FieldElement e in ((element as ClassElement).fields)) {
         List<ElementAnnotation> fieldAnnotationList = e.metadata;
         fieldAnnotationList.forEach((element) {
-          if(element.toString().startsWith("@RouterArgs")){
+          if(element.toString().startsWith("@RouterArg")){
             Argument argument = Argument();
             argument.isRequired = element.computeConstantValue().getField("required").toBoolValue();
             argument.name = e.name;
