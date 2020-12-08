@@ -31,21 +31,26 @@ class RouterGenerator extends GeneratorForAnnotation<RouterPage> {
       for (FieldElement e in ((element as ClassElement).fields)) {
         List<ElementAnnotation> fieldAnnotationList = e.metadata;
         fieldAnnotationList.forEach((element) {
-          if(element.toString().startsWith("@RouterArg")){
+          if (element.toString().startsWith("@RouterArg")) {
             Argument argument = Argument();
-            argument.isRequired = element.computeConstantValue().getField("required").toBoolValue();
+            argument.isRequired = element
+                .computeConstantValue()
+                .getField("required")
+                .toBoolValue();
             argument.name = e.name;
-            argument.type = e.toString().split(" ")[0];
+            print("arguments-field: ${e.toString()}");
+            String type_ = e.toString().split(" ")[0];
+            argument.type = type_.replaceAll("*", "");
             page.arguments.add(argument);
             print("arguments: ${argument.toString()}");
           }
         });
       }
-      if(aptRouterPath == "/"||annotation.read("isIndex").boolValue){
-        page.routerPath =  "/";
+      if (aptRouterPath == "/" || annotation.read("isIndex").boolValue) {
+        page.routerPath = "/";
         page.name = className;
         collector.indexRouter["/"] = page;
-      }else{
+      } else {
         page.name = className;
         page.routerPath = routerName;
         collector.routerMap[routerName] = page;
@@ -53,5 +58,4 @@ class RouterGenerator extends GeneratorForAnnotation<RouterPage> {
     }
     return null;
   }
-
 }
