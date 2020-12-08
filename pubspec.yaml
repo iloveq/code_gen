@@ -1,0 +1,17 @@
+name: code_gen
+description: auto generate router params
+version: 0.0.1
+author: haoran
+homepage: 1549112908@qq.com
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  analyzer: any
+  build: any
+  build_config: '>=0.3.0'
+  source_gen: ^0.9.7
+
+dev_dependencies:
+  build_runner: ^1.10.0

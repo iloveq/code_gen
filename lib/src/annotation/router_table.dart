@@ -1,0 +1,3 @@
+class RouterTable{
+  const RouterTable();
+}

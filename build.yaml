@@ -1,0 +1,29 @@
+targets:
+  $default:
+    builders:
+      code_gen|router_gen_builder:
+        options: { 'write': true }
+        enabled: true
+        generate_for:
+          exclude: ['**.params.g.dart']
+      code_gen|router_table_gen_builder:
+        options: { 'write': true }
+        enabled: true
+        generate_for:
+          exclude: ['**.table.dart']
+
+
+builders:
+  router_gen_builder:
+    import: "package:code_gen/builder.dart"
+    builder_factories: ["generateRouterParams"]
+    build_extensions: {".dart": ['.params.g.dart']}
+    auto_apply: dependents
+    build_to: source
+    runs_before: ['code_gen|router_table_gen_builder']
+  router_table_gen_builder:
+    import: "package:code_gen/builder.dart"
+    builder_factories: ["generateRouterTable"]
+    build_extensions: {".dart": ['.table.dart']}
+    auto_apply: dependents
+    build_to: source
