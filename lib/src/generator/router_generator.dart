@@ -5,7 +5,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../annotation/router.dart';
 
-class RouterGenerator extends GeneratorForAnnotation<Router> {
+class RouterGenerator extends GeneratorForAnnotation<RouterPage> {
   static RouterCollector collector = RouterCollector();
 
   @override
