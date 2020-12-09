@@ -263,7 +263,7 @@ class RouterArg {
   const RouterArg({this.required = false});
 }
 // 创建注解生成器:
-// 1 RouterGenerator
+// 1 RouterGenerator:
 class RouterGenerator extends GeneratorForAnnotation<RouterPage> {
   static RouterCollector collector = RouterCollector();
 
@@ -318,40 +318,43 @@ class RouterGenerator extends GeneratorForAnnotation<RouterPage> {
     return null;
   }
 }
-// 2RouterTableGenerator ：
+// 2 RouterTableGenerator:
 class RouterTableGenerator extends GeneratorForAnnotation<RouterTable> {
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
     if (element.kind == ElementKind.CLASS) {
       String path = buildStep.inputId.path; // lib/xxx.dart
-      String fileName = Path.basename(path); // xxx.dart
-      String className = element.name;
-      return generateRouterTable(fileName, className);
+      String relatedFileName = Path.basename(path); // xxx.dart
+      String relatedClassName = element.name;
+      return generateRouterTable(relatedFileName, relatedClassName);
     }
     return "class TestTable{}";
   }
 
-  String generateRouterTable(String fileName, String simpleClassName) {
-    String export = fileName.split(".")[0] + ".table." + fileName.split(".")[1];
+  String generateRouterTable(String relatedFileName, String relatedClassName) {
+    String export = relatedFileName.split(".")[0] +
+        ".table." +
+        relatedClassName.split(".")[1];
     String imports = "";
     String routerMap = "";
-    var extensions = "";
+    var ArgsAndNavigatorExtension = "";
     for (String import in RouterGenerator.collector.importList) {
       imports = imports + "import '" + import + "';\n";
     }
     RouterGenerator.collector.routerMap.forEach((key, value) {
       routerMap = routerMap + "'${key}':( context ) => ${value.name}(),";
-      extensions = extensions + _genArgumentAndExtension(value);
+      ArgsAndNavigatorExtension =
+          ArgsAndNavigatorExtension + _genArgsAndNavigatorExtension(value);
     });
 
     return """
 export '${export}';
-import '${fileName}';
+import '${relatedFileName}';
 import 'package:flutter/cupertino.dart';
 ${imports}
 
-class \$${simpleClassName} implements ${simpleClassName}{    
+class \$${relatedClassName} implements ${relatedClassName}{    
 
   @override
   Map<String, WidgetBuilder> configureRoutes() {
@@ -362,13 +365,13 @@ class \$${simpleClassName} implements ${simpleClassName}{
   }  
 }
 
-${extensions}
+${ArgsAndNavigatorExtension}
 
 """;
   }
 }
 
-String _genArgumentAndExtension(Page page) {
+String _genArgsAndNavigatorExtension(Page page) {
   var fields = "";
   var argument = "";
   var extension = "";
@@ -385,12 +388,12 @@ String _genArgumentAndExtension(Page page) {
           page.arguments[i].name +
           ";\n";
       constructorParams = constructorParams +
-          (page.arguments[i].isRequired?"@required ":"")+
+          (page.arguments[i].isRequired ? "@required " : "") +
           "this." +
           page.arguments[i].name +
           (size == 1 || i == size - 1 ? "" : ",");
       functionParams = functionParams +
-          (page.arguments[i].isRequired?"@required ":"")+
+          (page.arguments[i].isRequired ? "@required " : "") +
           page.arguments[i].type +
           " " +
           page.arguments[i].name +
@@ -404,7 +407,8 @@ String _genArgumentAndExtension(Page page) {
   }
   var explainName = "${page.name}";
   argument = _genArgument(page, fields, constructorParams);
-  extension = _genExtension(page, functionParams, selectedConstructorParams);
+  extension =
+      _genNavigatorExtension(page, functionParams, selectedConstructorParams);
   return """
 // **************************************************************************   
 // ${explainName}
@@ -418,7 +422,7 @@ $extension
 """;
 }
 
-String _genExtension(
+String _genNavigatorExtension(
     Page page, String functionParams, String selectedConstructorParams) {
   if (page.arguments == null || page.arguments.isEmpty) {
     return """
